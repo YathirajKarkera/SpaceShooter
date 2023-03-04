@@ -15,7 +15,7 @@ export default class AlienShip extends Enemy {
     @property
     duration: number = 10;
     @property
-    moveAmountX: number = 300;
+    moveAmountX: number = 150;
     @property
     moveAmountY: number = 75;
 
