@@ -31,7 +31,7 @@ export default class GamePlayManager extends cc.Component {
     spawnCount: number = 0;
 
     private activeEnemy = null;
-    powerUpSpawnInterval: number = 5;
+    powerUpSpawnInterval: number = 30;
 
     activePowerUp: cc.Node = null;
 

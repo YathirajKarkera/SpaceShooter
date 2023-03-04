@@ -19,7 +19,7 @@ export default class BulletPower extends PowerUp {
     onLoad() { }
 
     start() {
-        this.node.setPosition(-700, 400);
+        this.node.setPosition(-this.node.parent.getContentSize().width / 2, 400);
     }
 
     onCollisionEnter(otherCollider, selfCollider) {
