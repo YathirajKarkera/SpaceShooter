@@ -5,6 +5,8 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
 
+import GamePlayManager from "./GamePlayManager";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -12,10 +14,13 @@ export default class PLayer extends cc.Component {
     moveLeft: number = 0;
     moveRight: number = 0;
     screenLimit: number = 0;
+    bulletSpawnSpeed: number = 0.5;
 
     //bullet
     @property(cc.Prefab)
     bullet: cc.Prefab = null;
+
+    gameManager: GamePlayManager;
 
 
     // LIFE-CYCLE CALLBACKS:
@@ -25,18 +30,30 @@ export default class PLayer extends cc.Component {
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.movePlayer, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.stopPlayer, this);
 
+        this.gameManager = cc.find('Canvas').getComponent(GamePlayManager);
 
         //Touch input
         this.node.parent.on('touchstart', this.onTouchBegin, this);
         this.node.parent.on('touchend', this.onTouchEnd, this);
 
-        this.schedule(this.shootBullets, 0.2, cc.macro.REPEAT_FOREVER, 0);
-
+        this.startFiring();
     }
+
 
     start() {
 
     }
+
+    startFiring() {
+        this.schedule(this.shootBullets, this.bulletSpawnSpeed, cc.macro.REPEAT_FOREVER, 0);
+    }
+
+
+    stopFiring() {
+        this.unschedule(this.shootBullets);
+    }
+
+
 
     onTouchBegin(event) {
         if (event.getLocationX() < this.screenLimit) {
@@ -82,6 +99,8 @@ export default class PLayer extends cc.Component {
     }
 
     update(dt) {
+        if (this.gameManager.getGameStatus())
+            return;
         if (this.moveLeft == 1) {
             this.node.setPosition(this.node.position.x -= 300 * dt, this.node.position.y);
             if (this.node.position.x < -this.screenLimit)
