@@ -5,21 +5,35 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
 
+import Enemy from "./Enemy";
+import PowerUp from "./PowerUp";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class GamePlayManager extends cc.Component {
 
     @property(cc.Prefab)
-    obstacles: cc.Prefab[] = [];
+    asteroids: cc.Prefab[] = [];
+
+    @property(cc.Prefab)
+    alienShips: cc.Prefab[] = [];
+
+    @property(cc.Prefab)
+    powerUps: cc.Prefab[] = [];
 
     screenLimit: number = 0;
 
     score: number = 0;
-    highscore: number = 0;
+    highScore: number = 0;
 
     private isGameOver: boolean = false;
+    spawnCount: number = 0;
 
+    private activeEnemy = null;
+    powerUpSpawnInterval: number = 5;
+
+    activePowerUp: cc.Node = null;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -28,36 +42,72 @@ export default class GamePlayManager extends cc.Component {
         manager.enabled = true;
 
         cc.director.getPhysicsManager().enabled = true;
-        this.screenLimit = this.node.parent.getContentSize().height / 2;
+        this.screenLimit = this.node.getContentSize().height / 2;
 
-
+        this.schedule(this.spawnPowerUps, this.powerUpSpawnInterval, cc.macro.REPEAT_FOREVER, 0);
     }
 
     start() {
         this.onPlayAgain();
     }
 
-    spawnObstacles() {
+    spawnEnemy() {
+        this.spawnCount++;
+        if (this.spawnCount >= 5) {
+            this.spawnAlienShip();
+        }
+        else
+            this.spawnAsteroid();
+    }
 
-        let random = Math.floor(Math.random() * this.obstacles.length);
-        let newShip = cc.instantiate(this.obstacles[random]);
-        let randomX = [170, 0, -170];
+    spawnAsteroid() {
+        let random = Math.floor(Math.random() * this.asteroids.length);
+        let newShip = cc.instantiate(this.asteroids[random]);
         let randX = Math.floor(Math.random() * (170 - (-170) + 1) - 170)
-        let randY = Math.floor(Math.random() * ((this.screenLimit + 500) - this.screenLimit + 1) + this.screenLimit)
-        newShip.setPosition(randX, 500);
+        let min = this.screenLimit;
+        let max = this.screenLimit + 50;
+        let randY = Math.floor(Math.random() * (max - min + 1) + min)
+        newShip.setPosition(randX, randY);
         this.node.addChild(newShip);
+
+        this.activeEnemy = newShip;
+    }
+
+    spawnAlienShip() {
+        this.spawnCount = 0;
+
+        let random = Math.floor(Math.random() * this.alienShips.length);
+        let newEnemy = cc.instantiate(this.alienShips[random]);
+        let min = this.screenLimit;
+        let max = this.screenLimit + 50;
+        let randY = Math.floor(Math.random() * (max - min + 1) + min);
+        let randX = Math.floor(Math.random() * (150 - (-150) + 1) - 150)
+        newEnemy.setPosition(randX, randY);
+        this.node.addChild(newEnemy);
+
+        this.activeEnemy = newEnemy
+    }
+
+    spawnPowerUps() {
+        if (this.activePowerUp)
+            return;
+        let random = Math.floor(Math.random() * this.powerUps.length);
+        let newPowerUp = cc.instantiate(this.powerUps[random]);
+        this.node.addChild(newPowerUp);
+
+        this.activePowerUp = newPowerUp;
     }
 
     AddScore() {
-        this.score += 10;
-        if (this.score > this.highscore)
-            this.highscore = this.score;
+        this.score += 1;
+        if (this.score > this.highScore)
+            this.highScore = this.score;
 
         this.updateScore();
     }
 
     updateScore() {
-        this.node.getChildByName("HUD").getChildByName("Score").getComponent(cc.Label).string = "Score :" + this.score;
+        this.node.getChildByName("HUD").getChildByName("Score").getComponent(cc.Label).string = "Score : " + this.score;
     }
 
     // update (dt) {}
@@ -70,8 +120,9 @@ export default class GamePlayManager extends cc.Component {
         this.node.getChildByName("Player").getComponent('Player').startFiring();
 
         this.score = 0;
+        this.spawnCount = 0;
         this.updateScore();
-        this.spawnObstacles();
+        this.spawnEnemy();
     }
 
     onGameOver() {
@@ -80,12 +131,18 @@ export default class GamePlayManager extends cc.Component {
         this.isGameOver = true;
         this.updateGameOverSreen();
         this.node.getChildByName("Player").getComponent('Player').stopFiring();
+
+        if (this.activeEnemy) {
+            this.activeEnemy.active = false;
+            this.activeEnemy.destroy();
+        }
     }
+
 
     updateGameOverSreen() {
         let gameOverNode = this.node.getChildByName("GameOver");
         gameOverNode.getChildByName("Score").getComponent(cc.Label).string = "Score : " + this.score;
-        gameOverNode.getChildByName("HighScore").getComponent(cc.Label).string = "High Score :  : " + this.highscore;
+        gameOverNode.getChildByName("HighScore").getComponent(cc.Label).string = "High Score : " + this.highScore;
 
     }
 

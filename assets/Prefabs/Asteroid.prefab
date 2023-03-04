@@ -118,6 +118,19 @@
     "_id": ""
   },
   {
+    "__type__": "96048Jv+aBKD4fKx4sdPitW",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "explosion": {
+      "__uuid__": "f94655cc-bb51-4186-9d75-71d1fe5b40b2"
+    },
+    "_id": ""
+  },
+  {
     "__type__": "cc.PolygonCollider",
     "_name": "",
     "_objFlags": 0,
@@ -223,19 +236,6 @@
         "y": 73.6
       }
     ],
-    "_id": ""
-  },
-  {
-    "__type__": "96048Jv+aBKD4fKx4sdPitW",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "duration": 0.5,
-    "moveAmountX": 300,
-    "moveAmountY": 75,
     "_id": ""
   },
   {

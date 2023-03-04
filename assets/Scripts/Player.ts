@@ -36,9 +36,10 @@ export default class PLayer extends cc.Component {
         this.node.parent.on('touchstart', this.onTouchBegin, this);
         this.node.parent.on('touchend', this.onTouchEnd, this);
 
+        cc.systemEvent.on("BulletPowerUp", this.onBulletPowerUp, this);
+
         this.startFiring();
     }
-
 
     start() {
 
@@ -48,12 +49,23 @@ export default class PLayer extends cc.Component {
         this.schedule(this.shootBullets, this.bulletSpawnSpeed, cc.macro.REPEAT_FOREVER, 0);
     }
 
-
     stopFiring() {
         this.unschedule(this.shootBullets);
     }
 
-
+    onBulletPowerUp() {
+        this.bulletSpawnSpeed = 0.2;
+        this.stopFiring();
+        this.startFiring();
+        cc.tween(this)
+            .delay(3)
+            .call(() => {
+                this.bulletSpawnSpeed = 0.5;
+                this.stopFiring();
+                this.startFiring();
+            }, this)
+            .start()
+    }
 
     onTouchBegin(event) {
         if (event.getLocationX() < this.screenLimit) {

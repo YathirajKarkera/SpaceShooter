@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Bullet",
+    "_name": "EnemyBullet",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -218,17 +218,6 @@
     "_id": ""
   },
   {
-    "__type__": "8feb8EObjJIbqJNHaO/wD58",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "BulletSpeed": 500,
-    "_id": ""
-  },
-  {
     "__type__": "cc.AudioSource",
     "_name": "",
     "_objFlags": 0,
@@ -237,7 +226,7 @@
     },
     "_enabled": true,
     "_clip": {
-      "__uuid__": "f91fc2ad-612b-4def-be37-996f4bc1e7f5"
+      "__uuid__": "50950f67-d2f8-496f-9672-e6054f1a6289"
     },
     "_volume": 1,
     "_mute": false,
@@ -245,6 +234,17 @@
     "_firstlyEnabled": true,
     "playOnLoad": true,
     "preload": true,
+    "_id": ""
+  },
+  {
+    "__type__": "1fb10/IaelLAaEeNE3dO9Vf",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "BulletSpeed": 500,
     "_id": ""
   },
   {

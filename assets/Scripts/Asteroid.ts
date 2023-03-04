@@ -5,48 +5,59 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
 
+import Enemy from "./Enemy";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class Asteroid extends cc.Component {
+export default class Asteroid extends Enemy {
 
-    @property
-    duration: number = 0.5;
-    @property
-    moveAmountX: number = 300;
-    @property
-    moveAmountY: number = 75;
+    @property({ type: cc.AudioClip })
+    explosion = null;
 
 
-    enemyLife: number = 3;
+    life: number = 3;
     playAnimation: boolean = true;
 
+    astroidRb: cc.RigidBody = null;;
+
+    constructor() {
+        super();
+    }
 
     // LIFE-CYCLE CALLBACKS:
 
     onLoad() {
-        let movement: cc.ActionInterval = this.setMovements();
-        //   this.node.runAction(movement);
-        //    this.schedule(this.spawnBullets, this.ShootFrequency, cc.macro.REPEAT_FOREVER, 3.0);
+        super.onLoad();
+        this.astroidRb = this.node.getComponent(cc.RigidBody);
+        this.setAstroidProperty();
     }
 
-    setMovements() {
-        var moveLeft = cc.moveBy(this.duration, cc.v2(-this.moveAmountX, -this.moveAmountY)).easing(cc.easeCircleActionInOut());
-        var moveRight = cc.moveBy(this.duration, cc.v2(this.moveAmountX, -this.moveAmountY)).easing(cc.easeCircleActionInOut());
-        return cc.repeatForever(cc.sequence(moveLeft, moveRight));
+    start() {
+
     }
 
+    setAstroidProperty() {
+        this.astroidRb.gravityScale = Math.random();
+        if (this.astroidRb.gravityScale <= 0.1)
+            this.astroidRb.gravityScale = 0.1;
+        if (this.astroidRb.gravityScale >= 0.75)
+            this.astroidRb.gravityScale = 0.75;
+    }
 
     onCollisionEnter(otherCollider, selfCollider) {
         if (otherCollider.name == "Bullet<PolygonCollider>") {
-            this.enemyLife -= 1;
-            if ((this.enemyLife <= 0) && (this.playAnimation == true)) {
+            this.life -= 1;
+            if ((this.life <= 0) && (this.playAnimation == true)) {
                 this.node.stopAllActions();
 
                 //  this.node.active = false;
                 this.playAnimation = false;
-
+                cc.audioEngine.playEffect(this.explosion, false);
                 this.node.getComponent(cc.Animation).play();
+            }
+            else {
+                this.node.scale -= 0.05;
             }
         }
         if (otherCollider.name == "Player<PolygonCollider>") {
@@ -55,18 +66,11 @@ export default class Asteroid extends cc.Component {
         }
     }
 
-    removeExplosion() {
-        this.node.destroy();
-        this.node.parent.getComponent('GamePlayManager').spawnObstacles();
-        //  cc.audioEngine.playEffect(this.explosion, false);
-        this.node.parent.getComponent('GamePlayManager').AddScore();
+    protected onAnimationComplete() {
+        this.removeExplosion();
     }
 
-
-
-    start() {
-
+    update(dt) {
+        super.update(dt);
     }
-
-    // update (dt) {}
 }
