@@ -8,8 +8,8 @@
   "premultiplyAlpha": false,
   "genMipmaps": false,
   "packable": true,
-  "width": 480,
-  "height": 360,
+  "width": 360,
+  "height": 270,
   "platformSettings": {},
   "subMetas": {
     "asteroid": {
